@@ -1,47 +1,52 @@
 <script>
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import TaskForm from './components/NewTask.svelte';
+  import TaskList from './components/TaskList.svelte';
+  import CategoryFilter from './components/TaskFilter.svelte';
+
+  let tasks = [];
+  let filteredCategory = '';
+
+  const addTask = (event) => {
+    tasks = [...tasks, event.detail];
+  };
+
+  const completeTask = (task) => {
+    task.completed = !task.completed;
+  };
+
+  const deleteTask = (taskToDelete) => {
+    tasks = tasks.filter((task) => task !== taskToDelete);
+  };
+
+  const filterTasks = (category) => {
+    filteredCategory = category;
+  };
+
+  $: filteredTasks = filteredCategory
+    ? tasks.filter((task) => task.category === filteredCategory)
+    : tasks;
 </script>
 
 <main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
-
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
+  <h1>Task Manager</h1>
+  <TaskForm on:add={addTask} />
+  <CategoryFilter
+    categories={['Work', 'Personal', 'Urgent', 'Category x', 'School']}
+    onFilter={filterTasks}
+  />
+  <TaskList
+    tasks={filteredTasks}
+    onComplete={completeTask}
+    onDelete={deleteTask}
+  />
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
+  h1 {
+    color: orange;
   }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
+  :global(body) {
+    background-color: lightgrey;
+    color: black;
   }
 </style>
